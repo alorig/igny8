@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Igny8
-Description: Inject AI-powered, persona-adaptive blog content via OpenAI with moderation and model selection.
+Description: A modular, layered content and SEO engine for advanced WordPress workflows.
 Version: 2.2
 Author: Igny8 Team
 Text Domain: igny8
