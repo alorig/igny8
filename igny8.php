@@ -2,7 +2,7 @@
 /*
 Plugin Name: Igny8
 Description: A modular, layered content and SEO engine for advanced WordPress workflows.
-Version: 2.2
+Version: 2.3
 Author: Igny8 Team
 Text Domain: igny8
 */
