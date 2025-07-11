@@ -17,11 +17,29 @@ add_action('admin_enqueue_scripts', function($hook) {
         return;
     }
     
-    // Enqueue the admin JavaScript
+    // Enqueue the admin dashboard CSS
+    wp_enqueue_style(
+        'igny8-admin-dashboard-css',
+        plugins_url('../assets/css/admin-dashboard.css', __FILE__),
+        [],
+        '2.3',
+        'all'
+    );
+    
+    // Enqueue the admin dashboard JavaScript
+    wp_enqueue_script(
+        'igny8-admin-dashboard-js',
+        plugins_url('../assets/js/admin-dashboard.js', __FILE__),
+        ['jquery'],
+        '2.3',
+        true
+    );
+    
+    // Enqueue the original admin JavaScript
     wp_enqueue_script(
         'igny8-admin-js',
         plugins_url('../assets/js/igny8-admin.js', __FILE__),
-        ['jquery'],
+        ['jquery', 'igny8-admin-dashboard-js'],
         '2.2',
         true
     );
