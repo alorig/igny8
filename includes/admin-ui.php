@@ -131,8 +131,71 @@ function igny8_intelli_page() {
     ?>
     <div class="wrap">
         <h2>INTELLI Module</h2>
-        <p><strong>INTELLI Module Loaded</strong></p>
-        <p>This is the INTELLI module page for Igny8.</p>
+        
+        <div class="igny8-tabs">
+            <ul class="igny8-tab-nav">
+                <li><a href="#intelli-overview">Overview</a></li>
+                <li><a href="#intelli-queue">Regeneration Queue</a></li>
+                <li><a href="#intelli-scheduling">Scheduling</a></li>
+                <li><a href="#intelli-history">History & Rollback</a></li>
+                <li><a href="#intelli-advanced">Advanced Settings</a></li>
+            </ul>
+            
+            <!-- Overview Tab -->
+            <div id="intelli-overview" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>INTELLI Module Overview</h3>
+                    <div class="igny8-placeholder">
+                        <h4>INTELLI Content Regeneration Engine</h4>
+                        <p>This section will display INTELLI overview and quick actions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Regeneration Queue Tab -->
+            <div id="intelli-queue" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Regeneration Queue Management</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Content Regeneration Queue</h4>
+                        <p>This section will display the regeneration queue.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scheduling Tab -->
+            <div id="intelli-scheduling" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Content Scheduling</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Automated Regeneration Scheduling</h4>
+                        <p>This section will handle scheduling for regeneration.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History & Rollback Tab -->
+            <div id="intelli-history" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Regeneration History</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Content Version History</h4>
+                        <p>This section will display history of regenerations and rollback options.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Settings Tab -->
+            <div id="intelli-advanced" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Advanced INTELLI Configuration</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Advanced Settings</h4>
+                        <p>This section will contain advanced INTELLI settings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php
 }
@@ -144,8 +207,71 @@ function igny8_loops_page() {
     ?>
     <div class="wrap">
         <h2>LOOPS Module</h2>
-        <p><strong>LOOPS Module Loaded</strong></p>
-        <p>This is the LOOPS module page for Igny8.</p>
+        
+        <div class="igny8-tabs">
+            <ul class="igny8-tab-nav">
+                <li><a href="#loops-overview">Overview</a></li>
+                <li><a href="#loops-keywords">Keyword Upload/Clustering</a></li>
+                <li><a href="#loops-mapping">Cluster Mapping</a></li>
+                <li><a href="#loops-linking">Internal Linking</a></li>
+                <li><a href="#loops-advanced">Advanced Settings</a></li>
+            </ul>
+            
+            <!-- Overview Tab -->
+            <div id="loops-overview" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>LOOPS Module Overview</h3>
+                    <div class="igny8-placeholder">
+                        <h4>LOOPS Content Clustering Engine</h4>
+                        <p>This section will show LOOPS overview.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Keyword Upload/Clustering Tab -->
+            <div id="loops-keywords" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Keyword Management</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Keyword Upload and Clustering</h4>
+                        <p>This section will allow keyword upload and clustering.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cluster Mapping Tab -->
+            <div id="loops-mapping" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Cluster Mapping</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Content Cluster Visualization</h4>
+                        <p>This section will handle cluster mapping.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Internal Linking Tab -->
+            <div id="loops-linking" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Internal Linking Strategy</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Automated Internal Linking</h4>
+                        <p>This section will manage internal linking strategies.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Settings Tab -->
+            <div id="loops-advanced" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Advanced LOOPS Configuration</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Advanced Settings</h4>
+                        <p>This section will contain advanced LOOPS settings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php
 }
@@ -157,8 +283,71 @@ function igny8_hive_page() {
     ?>
     <div class="wrap">
         <h2>HIVE Module</h2>
-        <p><strong>HIVE Module Loaded</strong></p>
-        <p>This is the HIVE module page for Igny8.</p>
+        
+        <div class="igny8-tabs">
+            <ul class="igny8-tab-nav">
+                <li><a href="#hive-overview">Overview</a></li>
+                <li><a href="#hive-social">Social Posting</a></li>
+                <li><a href="#hive-syndication">Blog Syndication</a></li>
+                <li><a href="#hive-backlinks">Backlink Scheduling</a></li>
+                <li><a href="#hive-advanced">Advanced Settings</a></li>
+            </ul>
+            
+            <!-- Overview Tab -->
+            <div id="hive-overview" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>HIVE Module Overview</h3>
+                    <div class="igny8-placeholder">
+                        <h4>HIVE Content Distribution Engine</h4>
+                        <p>This section will display HIVE overview.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Posting Tab -->
+            <div id="hive-social" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Social Media Distribution</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Automated Social Posting</h4>
+                        <p>This section will handle social posting setup.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Blog Syndication Tab -->
+            <div id="hive-syndication" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Blog Syndication Management</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Content Syndication Workflows</h4>
+                        <p>This section will manage blog syndication workflows.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Backlink Scheduling Tab -->
+            <div id="hive-backlinks" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Backlink Strategy</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Automated Backlink Management</h4>
+                        <p>This section will manage backlink scheduling.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Settings Tab -->
+            <div id="hive-advanced" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Advanced HIVE Configuration</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Advanced Settings</h4>
+                        <p>This section will contain advanced HIVE settings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php
 }
@@ -170,8 +359,59 @@ function igny8_skin_page() {
     ?>
     <div class="wrap">
         <h2>SKIN Module</h2>
-        <p><strong>SKIN Module Loaded</strong></p>
-        <p>This is the SKIN module page for Igny8.</p>
+        
+        <div class="igny8-tabs">
+            <ul class="igny8-tab-nav">
+                <li><a href="#skin-overview">Overview</a></li>
+                <li><a href="#skin-theme">Theme Options</a></li>
+                <li><a href="#skin-typography">Typography & Colors</a></li>
+                <li><a href="#skin-advanced">Advanced Settings</a></li>
+            </ul>
+            
+            <!-- Overview Tab -->
+            <div id="skin-overview" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>SKIN Module Overview</h3>
+                    <div class="igny8-placeholder">
+                        <h4>SKIN Theme Customization Engine</h4>
+                        <p>This section will display SKIN overview.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Theme Options Tab -->
+            <div id="skin-theme" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Theme Customization</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Theme Options and Layouts</h4>
+                        <p>This section will manage theme options.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Typography & Colors Tab -->
+            <div id="skin-typography" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Typography and Color Management</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Design System Configuration</h4>
+                        <p>This section will handle typography and color settings.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Settings Tab -->
+            <div id="skin-advanced" class="igny8-tab-content">
+                <div class="igny8-tab-section">
+                    <h3>Advanced SKIN Configuration</h3>
+                    <div class="igny8-placeholder">
+                        <h4>Advanced Settings</h4>
+                        <p>This section will contain advanced SKIN settings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php
 }
