@@ -2,9 +2,154 @@
 defined('ABSPATH') || exit;
 
 /*==================================================
-  ## IGNY8 SETTINGS PAGE UI
-  Description: Admin form for plugin configuration
+  ## IGNY8 ADMIN PAGE UI
+  Description: Admin pages for all Igny8 modules
 ==================================================*/
+
+/**
+ * Admin page loader function
+ * Routes to appropriate page based on current submenu
+ */
+function igny8_admin_page_loader() {
+    $current_page = $_GET['page'] ?? 'igny8';
+    
+    switch ($current_page) {
+        case 'igny8':
+            igny8_dashboard_page();
+            break;
+        case 'igny8-flux':
+            igny8_flux_page();
+            break;
+        case 'igny8-intelli':
+            igny8_intelli_page();
+            break;
+        case 'igny8-loops':
+            igny8_loops_page();
+            break;
+        case 'igny8-hive':
+            igny8_hive_page();
+            break;
+        case 'igny8-skin':
+            igny8_skin_page();
+            break;
+        case 'igny8-settings':
+            igny8_settings_page();
+            break;
+        case 'igny8-reports':
+            igny8_reports_page();
+            break;
+        case 'igny8-help':
+            igny8_help_page();
+            break;
+        default:
+            igny8_dashboard_page();
+            break;
+    }
+}
+
+/**
+ * Dashboard page
+ */
+function igny8_dashboard_page() {
+    ?>
+    <div class="wrap">
+        <h2>Igny8 Dashboard</h2>
+        <p><strong>Dashboard Loaded</strong></p>
+        <p>Welcome to the Igny8 Dashboard. This is the main control center for all Igny8 modules.</p>
+    </div>
+    <?php
+}
+
+/**
+ * FLUX module page
+ */
+function igny8_flux_page() {
+    ?>
+    <div class="wrap">
+        <h2>FLUX Module</h2>
+        <p><strong>FLUX Module Loaded</strong></p>
+        <p>This is the FLUX module page for Igny8.</p>
+    </div>
+    <?php
+}
+
+/**
+ * INTELLI module page
+ */
+function igny8_intelli_page() {
+    ?>
+    <div class="wrap">
+        <h2>INTELLI Module</h2>
+        <p><strong>INTELLI Module Loaded</strong></p>
+        <p>This is the INTELLI module page for Igny8.</p>
+    </div>
+    <?php
+}
+
+/**
+ * LOOPS module page
+ */
+function igny8_loops_page() {
+    ?>
+    <div class="wrap">
+        <h2>LOOPS Module</h2>
+        <p><strong>LOOPS Module Loaded</strong></p>
+        <p>This is the LOOPS module page for Igny8.</p>
+    </div>
+    <?php
+}
+
+/**
+ * HIVE module page
+ */
+function igny8_hive_page() {
+    ?>
+    <div class="wrap">
+        <h2>HIVE Module</h2>
+        <p><strong>HIVE Module Loaded</strong></p>
+        <p>This is the HIVE module page for Igny8.</p>
+    </div>
+    <?php
+}
+
+/**
+ * SKIN module page
+ */
+function igny8_skin_page() {
+    ?>
+    <div class="wrap">
+        <h2>SKIN Module</h2>
+        <p><strong>SKIN Module Loaded</strong></p>
+        <p>This is the SKIN module page for Igny8.</p>
+    </div>
+    <?php
+}
+
+/**
+ * Reports page
+ */
+function igny8_reports_page() {
+    ?>
+    <div class="wrap">
+        <h2>Reports</h2>
+        <p><strong>Reports Loaded</strong></p>
+        <p>This is the Reports page for Igny8.</p>
+    </div>
+    <?php
+}
+
+/**
+ * Help page
+ */
+function igny8_help_page() {
+    ?>
+    <div class="wrap">
+        <h2>Help</h2>
+        <p><strong>Help Loaded</strong></p>
+        <p>This is the Help page for Igny8.</p>
+    </div>
+    <?php
+}
 
 /**
  * Render the main Igny8 settings page

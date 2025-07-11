@@ -12,8 +12,8 @@ defined('ABSPATH') || exit;
  * including field management, validation, and API testing
  */
 add_action('admin_enqueue_scripts', function($hook) {
-    // Only load on our settings page
-    if ($hook !== 'settings_page_igny8') {
+    // Only load on our Igny8 admin pages
+    if (strpos($hook, 'igny8') === false) {
         return;
     }
     
@@ -151,7 +151,12 @@ function igny8_admin_inline_script() {
 }
 
 /**
- * Hook the inline script to the admin footer
+ * Hook the inline script to the admin footer for all Igny8 pages
  * This ensures the JavaScript is loaded after the form is rendered
  */
-add_action('admin_footer-settings_page_igny8', 'igny8_admin_inline_script'); 
+add_action('admin_footer', function() {
+    $current_page = $_GET['page'] ?? '';
+    if (strpos($current_page, 'igny8') === 0) {
+        igny8_admin_inline_script();
+    }
+}); 

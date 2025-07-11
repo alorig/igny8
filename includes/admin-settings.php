@@ -69,20 +69,105 @@ add_action('admin_init', function () {
 
 
 /*==================================================
-  ## IGNY8 SETTINGS MENU
-  Description: Adds a submenu item under WordPress "Settings"
+  ## IGNY8 TOP-LEVEL ADMIN MENU
+  Description: Creates top-level menu with submenus for all Igny8 modules
 ==================================================*/
 
 /**
- * Add Igny8 settings page to WordPress admin menu
- * Creates a submenu item under Settings for plugin configuration
+ * Add Igny8 top-level menu and submenus to WordPress admin
+ * Creates a complete admin menu structure for all Igny8 modules
  */
 add_action('admin_menu', function () {
-    add_options_page(
-        'Igny8 Settings',   // Page title
+    // Add top-level menu
+    add_menu_page(
+        'Igny8 Dashboard',  // Page title
         'Igny8',            // Menu title
         'manage_options',   // Capability required
         'igny8',            // Menu slug
-        'igny8_settings_page' // Callback function to render the page
+        'igny8_admin_page_loader', // Callback function to render the page
+        'dashicons-admin-generic', // Icon
+        30                  // Position
+    );
+
+    // Add submenus
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'Dashboard',        // Page title
+        'Dashboard',        // Menu title
+        'manage_options',   // Capability required
+        'igny8',            // Menu slug (same as parent for first submenu)
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'FLUX',             // Page title
+        'FLUX',             // Menu title
+        'manage_options',   // Capability required
+        'igny8-flux',       // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'INTELLI',          // Page title
+        'INTELLI',          // Menu title
+        'manage_options',   // Capability required
+        'igny8-intelli',    // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'LOOPS',            // Page title
+        'LOOPS',            // Menu title
+        'manage_options',   // Capability required
+        'igny8-loops',      // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'HIVE',             // Page title
+        'HIVE',             // Menu title
+        'manage_options',   // Capability required
+        'igny8-hive',       // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'SKIN',             // Page title
+        'SKIN',             // Menu title
+        'manage_options',   // Capability required
+        'igny8-skin',       // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'Settings',         // Page title
+        'Settings',         // Menu title
+        'manage_options',   // Capability required
+        'igny8-settings',   // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'Reports',          // Page title
+        'Reports',          // Menu title
+        'manage_options',   // Capability required
+        'igny8-reports',    // Menu slug
+        'igny8_admin_page_loader' // Callback function
+    );
+
+    add_submenu_page(
+        'igny8',            // Parent slug
+        'Help',             // Page title
+        'Help',             // Menu title
+        'manage_options',   // Capability required
+        'igny8-help',       // Menu slug
+        'igny8_admin_page_loader' // Callback function
     );
 }); 
