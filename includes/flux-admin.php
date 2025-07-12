@@ -32,21 +32,69 @@ function igny8_flux_admin_page() {
         echo '<p>Saved enabled post types: ' . implode(', ', $enabled_post_types) . '</p>';
         echo '<p>Global FLUX status: ' . esc_html($flux_status) . '</p>';
         echo '<p>Total saved post types count: ' . count($enabled_post_types) . '</p>';
+        
+        // Show all FLUX field values
+        $flux_fields = [
+            'igny8_flux_global_status' => 'Global Status',
+            'igny8_flux_insertion_position' => 'Insertion Position',
+            'igny8_flux_display_mode' => 'Display Mode',
+            'igny8_flux_teaser_text' => 'Teaser Text',
+            'igny8_flux_button_color' => 'Button Color',
+            'igny8_flux_content_bg' => 'Content Background',
+            'igny8_flux_custom_css' => 'Custom CSS',
+            'igny8_flux_field_mode' => 'Field Mode',
+            'igny8_flux_include_post_content' => 'Include Post Content',
+            'igny8_flux_include_page_context' => 'Include Page Context',
+            'igny8_flux_context_source' => 'Context Source',
+            'igny8_flux_input_scope' => 'Input Scope',
+            'igny8_flux_detection_prompt' => 'Detection Prompt',
+            'igny8_flux_content_length' => 'Content Length',
+            'igny8_flux_rewrite_prompt' => 'Rewrite Prompt'
+        ];
+        
+        echo '<h4>All FLUX Field Values:</h4>';
+        echo '<table class="widefat" style="margin-top: 10px;">';
+        echo '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
+        
+        foreach ($flux_fields as $option_name => $label) {
+            $value = get_option($option_name, 'Not Set');
+            if (is_array($value)) {
+                $value = implode(', ', $value);
+            }
+            if (empty($value)) {
+                $value = 'Empty';
+            }
+            echo '<tr><td><strong>' . esc_html($label) . '</strong></td><td>' . esc_html($value) . '</td></tr>';
+        }
+        
+        // Show fixed fields config
+        $fixed_fields = get_option('igny8_flux_fixed_fields_config', []);
+        echo '<tr><td><strong>Fixed Fields Config</strong></td><td>' . esc_html(json_encode($fixed_fields)) . '</td></tr>';
+        
+        echo '</tbody></table>';
         echo '</div>';
     }
     
     // Test save function
     if (current_user_can('manage_options') && isset($_GET['test_save'])) {
         $test_result = igny8_flux_test_saving();
-        if ($test_result) {
+        if ($test_result['success']) {
             echo '<div class="notice notice-success is-dismissible">';
             echo '<p><strong>Test Result: PASSED ✓</strong></p>';
-            echo '<p>FLUX post type saving is working correctly.</p>';
+            echo '<p>All FLUX settings and field saving are working correctly.</p>';
+            echo '<p>Detailed results:</p>';
+            foreach ($test_result['results'] as $option => $status) {
+                echo '<p>' . esc_html($option) . ': ' . esc_html($status) . '</p>';
+            }
             echo '</div>';
         } else {
             echo '<div class="notice notice-error is-dismissible">';
             echo '<p><strong>Test Result: FAILED ✗</strong></p>';
-            echo '<p>FLUX post type saving is not working correctly.</p>';
+            echo '<p>Some FLUX settings or field saving are not working as expected.</p>';
+            echo '<p>Detailed results:</p>';
+            foreach ($test_result['results'] as $option => $status) {
+                echo '<p>' . esc_html($option) . ': ' . esc_html($status) . '</p>';
+            }
             echo '</div>';
         }
     }
@@ -410,10 +458,70 @@ function igny8_flux_save_settings() {
         return;
     }
     
-    // Save global status
-    if (isset($_POST['igny8_flux_global_status'])) {
-        $status = sanitize_text_field($_POST['igny8_flux_global_status']);
-        update_option('igny8_flux_global_status', $status);
+    // Define field mappings for clean processing
+    $text_fields = [
+        'igny8_flux_global_status' => 'enabled',
+        'igny8_flux_insertion_position' => 'before',
+        'igny8_flux_display_mode' => 'button',
+        'igny8_flux_teaser_text' => 'Want to read this as if it was written exclusively about you?',
+        'igny8_flux_button_color' => '#0073aa',
+        'igny8_flux_content_bg' => '#f9f9f9',
+        'igny8_flux_field_mode' => 'dynamic',
+        'igny8_flux_input_scope' => '300',
+        'igny8_flux_content_length' => '300'
+    ];
+    
+    $textarea_fields = [
+        'igny8_flux_custom_css' => '',
+        'igny8_flux_detection_prompt' => '',
+        'igny8_flux_rewrite_prompt' => '',
+        'igny8_flux_context_source' => ''
+    ];
+    
+    $checkbox_fields = [
+        'igny8_flux_include_post_content' => '0',
+        'igny8_flux_include_page_context' => '0'
+    ];
+    
+    // Process text fields
+    foreach ($text_fields as $field_name => $default_value) {
+        if (isset($_POST[$field_name])) {
+            $value = sanitize_text_field($_POST[$field_name]);
+            update_option($field_name, $value);
+        } else {
+            update_option($field_name, $default_value);
+        }
+    }
+    
+    // Process textarea fields
+    foreach ($textarea_fields as $field_name => $default_value) {
+        if (isset($_POST[$field_name])) {
+            $value = wp_kses_post($_POST[$field_name]);
+            update_option($field_name, $value);
+        } else {
+            update_option($field_name, $default_value);
+        }
+    }
+    
+    // Process checkbox fields
+    foreach ($checkbox_fields as $field_name => $default_value) {
+        $value = isset($_POST[$field_name]) ? '1' : '0';
+        update_option($field_name, $value);
+    }
+    
+    // Handle color fields with hex validation
+    if (isset($_POST['igny8_flux_button_color'])) {
+        $button_color = sanitize_hex_color($_POST['igny8_flux_button_color']);
+        if ($button_color) {
+            update_option('igny8_flux_button_color', $button_color);
+        }
+    }
+    
+    if (isset($_POST['igny8_flux_content_bg'])) {
+        $content_bg = sanitize_hex_color($_POST['igny8_flux_content_bg']);
+        if ($content_bg) {
+            update_option('igny8_flux_content_bg', $content_bg);
+        }
     }
     
     // Save enabled post types with comprehensive validation
@@ -437,43 +545,7 @@ function igny8_flux_save_settings() {
     // Save the validated post types
     update_option('igny8_flux_enabled_post_types', $enabled_post_types);
     
-    // Save display settings
-    if (isset($_POST['igny8_flux_insertion_position'])) {
-        $position = sanitize_text_field($_POST['igny8_flux_insertion_position']);
-        update_option('igny8_flux_insertion_position', $position);
-    }
-    
-    if (isset($_POST['igny8_flux_display_mode'])) {
-        $mode = sanitize_text_field($_POST['igny8_flux_display_mode']);
-        update_option('igny8_flux_display_mode', $mode);
-    }
-    
-    if (isset($_POST['igny8_flux_teaser_text'])) {
-        $teaser = sanitize_text_field($_POST['igny8_flux_teaser_text']);
-        update_option('igny8_flux_teaser_text', $teaser);
-    }
-    
-    if (isset($_POST['igny8_flux_button_color'])) {
-        $button_color = sanitize_hex_color($_POST['igny8_flux_button_color']);
-        update_option('igny8_flux_button_color', $button_color);
-    }
-    
-    if (isset($_POST['igny8_flux_content_bg'])) {
-        $content_bg = sanitize_hex_color($_POST['igny8_flux_content_bg']);
-        update_option('igny8_flux_content_bg', $content_bg);
-    }
-    
-    if (isset($_POST['igny8_flux_custom_css'])) {
-        $custom_css = wp_kses_post($_POST['igny8_flux_custom_css']);
-        update_option('igny8_flux_custom_css', $custom_css);
-    }
-    
-    // Save field configuration
-    if (isset($_POST['igny8_flux_field_mode'])) {
-        $field_mode = sanitize_text_field($_POST['igny8_flux_field_mode']);
-        update_option('igny8_flux_field_mode', $field_mode);
-    }
-    
+    // Save fixed fields configuration
     if (isset($_POST['igny8_flux_fixed_fields_config']) && is_array($_POST['igny8_flux_fixed_fields_config'])) {
         $fields = [];
         foreach ($_POST['igny8_flux_fixed_fields_config'] as $field) {
@@ -488,39 +560,6 @@ function igny8_flux_save_settings() {
         update_option('igny8_flux_fixed_fields_config', $fields);
     }
     
-    // Save context settings
-    $include_content = isset($_POST['igny8_flux_include_post_content']) ? '1' : '0';
-    update_option('igny8_flux_include_post_content', $include_content);
-    
-    $include_context = isset($_POST['igny8_flux_include_page_context']) ? '1' : '0';
-    update_option('igny8_flux_include_page_context', $include_context);
-    
-    if (isset($_POST['igny8_flux_context_source'])) {
-        $context_source = wp_kses_post($_POST['igny8_flux_context_source']);
-        update_option('igny8_flux_context_source', $context_source);
-    }
-    
-    if (isset($_POST['igny8_flux_input_scope'])) {
-        $input_scope = sanitize_text_field($_POST['igny8_flux_input_scope']);
-        update_option('igny8_flux_input_scope', $input_scope);
-    }
-    
-    if (isset($_POST['igny8_flux_detection_prompt'])) {
-        $detection_prompt = wp_kses_post($_POST['igny8_flux_detection_prompt']);
-        update_option('igny8_flux_detection_prompt', $detection_prompt);
-    }
-    
-    // Save content generation settings
-    if (isset($_POST['igny8_flux_content_length'])) {
-        $content_length = sanitize_text_field($_POST['igny8_flux_content_length']);
-        update_option('igny8_flux_content_length', $content_length);
-    }
-    
-    if (isset($_POST['igny8_flux_rewrite_prompt'])) {
-        $rewrite_prompt = wp_kses_post($_POST['igny8_flux_rewrite_prompt']);
-        update_option('igny8_flux_rewrite_prompt', $rewrite_prompt);
-    }
-    
     // Show success message with detailed information
     add_action('admin_notices', function() use ($enabled_post_types) {
         echo '<div class="notice notice-success is-dismissible">';
@@ -532,7 +571,7 @@ function igny8_flux_save_settings() {
 }
 
 /**
- * Test function to verify FLUX post type saving works correctly
+ * Test function to verify FLUX field saving works correctly
  * This function can be called manually for testing purposes
  */
 function igny8_flux_test_saving() {
@@ -540,21 +579,55 @@ function igny8_flux_test_saving() {
         return false;
     }
     
-    // Test data
-    $test_post_types = ['post', 'page'];
+    // Test data for all FLUX fields
+    $test_data = [
+        'igny8_flux_global_status' => 'enabled',
+        'igny8_flux_enabled_post_types' => ['post', 'page'],
+        'igny8_flux_insertion_position' => 'before',
+        'igny8_flux_display_mode' => 'button',
+        'igny8_flux_teaser_text' => 'Test teaser text',
+        'igny8_flux_button_color' => '#ff0000',
+        'igny8_flux_content_bg' => '#f0f0f0',
+        'igny8_flux_custom_css' => '/* Test CSS */',
+        'igny8_flux_field_mode' => 'dynamic',
+        'igny8_flux_fixed_fields_config' => [
+            ['label' => 'Test Field', 'type' => 'text', 'options' => '']
+        ],
+        'igny8_flux_include_post_content' => '1',
+        'igny8_flux_include_page_context' => '0',
+        'igny8_flux_context_source' => '[test_context]',
+        'igny8_flux_input_scope' => '300',
+        'igny8_flux_detection_prompt' => 'Test detection prompt',
+        'igny8_flux_content_length' => '600',
+        'igny8_flux_rewrite_prompt' => 'Test rewrite prompt'
+    ];
     
     // Save test data
-    update_option('igny8_flux_enabled_post_types', $test_post_types);
-    
-    // Retrieve and verify
-    $saved_types = get_option('igny8_flux_enabled_post_types', []);
-    
-    // Check if saving worked
-    if ($saved_types === $test_post_types) {
-        return true;
+    foreach ($test_data as $option_name => $value) {
+        update_option($option_name, $value);
     }
     
-    return false;
+    // Retrieve and verify each field
+    $all_passed = true;
+    $results = [];
+    
+    foreach ($test_data as $option_name => $expected_value) {
+        $saved_value = get_option($option_name);
+        
+        if ($saved_value === $expected_value) {
+            $results[$option_name] = 'PASS';
+        } else {
+            $results[$option_name] = 'FAIL';
+            $all_passed = false;
+        }
+    }
+    
+    // Return results for display
+    return [
+        'success' => $all_passed,
+        'results' => $results,
+        'test_data' => $test_data
+    ];
 }
 
 /**

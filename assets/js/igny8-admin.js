@@ -52,7 +52,7 @@
          * Enhances the color input fields with better UX
          */
         function initColorPickers() {
-            const colorInputs = $('input[name="igny8_button_color"], input[name="igny8_content_bg"]');
+            const colorInputs = $('input[name="igny8_button_color"], input[name="igny8_content_bg"], input[name="igny8_flux_button_color"], input[name="igny8_flux_content_bg"]');
             
             colorInputs.each(function() {
                 const $input = $(this);
@@ -254,6 +254,8 @@
         // Initialize FLUX-specific functionality
         if ($('body').hasClass('settings_page_igny8-flux')) {
             initFluxFixedFields();
+            initColorPickers();
+            initFormValidation();
         }
 
     });
