@@ -42,117 +42,9 @@ function igny8_flux_admin_page() {
     $enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
     $flux_status = get_option('igny8_flux_global_status', 'enabled');
     
-    // Debug information for administrators
-    if (current_user_can('manage_options') && isset($_GET['debug'])) {
-        echo '<div class="notice notice-info is-dismissible">';
-        echo '<p><strong>Debug Information:</strong></p>';
-        echo '<p>Saved enabled post types: ' . implode(', ', $enabled_post_types) . '</p>';
-        echo '<p>Global FLUX status: ' . esc_html($flux_status) . '</p>';
-        echo '<p>Total saved post types count: ' . count($enabled_post_types) . '</p>';
-        
-        // Show POST data if available
-        if (!empty($_POST)) {
-            echo '<h4>POST Data Received:</h4>';
-            echo '<table class="widefat" style="margin-top: 10px;">';
-            echo '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
-            foreach ($_POST as $key => $value) {
-                if (is_array($value)) {
-                    $value = implode(', ', $value);
-                }
-                echo '<tr><td><strong>' . esc_html($key) . '</strong></td><td>' . esc_html($value) . '</td></tr>';
-            }
-            echo '</tbody></table>';
-        } else {
-            echo '<p><strong>No POST data received</strong></p>';
-        }
-        
-        // Show form submission status
-        echo '<h4>Form Submission Status:</h4>';
-        echo '<p>POST data present: ' . (!empty($_POST) ? 'YES' : 'NO') . '</p>';
-        echo '<p>Submit button pressed: ' . (isset($_POST['submit']) ? 'YES' : 'NO') . '</p>';
-        echo '<p>Save FLUX settings pressed: ' . (isset($_POST['save-flux-settings']) ? 'YES' : 'NO') . '</p>';
-        echo '<p>Nonce present: ' . (isset($_POST['igny8_flux_nonce']) ? 'YES' : 'NO') . '</p>';
-        if (isset($_POST['igny8_flux_nonce'])) {
-            echo '<p>Nonce valid: ' . (wp_verify_nonce($_POST['igny8_flux_nonce'], 'igny8_flux_settings') ? 'YES' : 'NO') . '</p>';
-        }
-        
-        // Show all FLUX field values
-        $flux_fields = [
-            'igny8_flux_global_status' => 'Global Status',
-            'igny8_flux_insertion_position' => 'Insertion Position',
-            'igny8_flux_display_mode' => 'Display Mode',
-            'igny8_flux_teaser_text' => 'Teaser Text',
-            'igny8_flux_button_color' => 'Button Color',
-            'igny8_flux_content_bg' => 'Content Background',
-            'igny8_flux_custom_css' => 'Custom CSS',
-            'igny8_flux_field_mode' => 'Field Mode',
-            'igny8_flux_include_post_content' => 'Include Post Content',
-            'igny8_flux_include_page_context' => 'Include Page Context',
-            'igny8_flux_context_source' => 'Context Source',
-            'igny8_flux_input_scope' => 'Input Scope',
-            'igny8_flux_detection_prompt' => 'Detection Prompt',
-            'igny8_flux_content_length' => 'Content Length',
-            'igny8_flux_rewrite_prompt' => 'Rewrite Prompt'
-        ];
-        
-        echo '<h4>All FLUX Field Values:</h4>';
-        echo '<table class="widefat" style="margin-top: 10px;">';
-        echo '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
-        
-        foreach ($flux_fields as $option_name => $label) {
-            $value = get_option($option_name, 'Not Set');
-            if (is_array($value)) {
-                $value = implode(', ', $value);
-            }
-            if (empty($value)) {
-                $value = 'Empty';
-            }
-            echo '<tr><td><strong>' . esc_html($label) . '</strong></td><td>' . esc_html($value) . '</td></tr>';
-        }
-        
-        // Show fixed fields config
-        $fixed_fields = get_option('igny8_flux_fixed_fields_config', []);
-        echo '<tr><td><strong>Fixed Fields Config</strong></td><td>' . esc_html(json_encode($fixed_fields)) . '</td></tr>';
-        
-        echo '</tbody></table>';
-        echo '</div>';
-    }
-    
-    // Test save function
-    if (current_user_can('manage_options') && isset($_GET['test_save'])) {
-        $test_result = igny8_flux_test_saving();
-        if ($test_result['success']) {
-            echo '<div class="notice notice-success is-dismissible">';
-            echo '<p><strong>Test Result: PASSED ✓</strong></p>';
-            echo '<p>All FLUX settings and field saving are working correctly.</p>';
-            echo '<p>Detailed results:</p>';
-            foreach ($test_result['results'] as $option => $status) {
-                echo '<p>' . esc_html($option) . ': ' . esc_html($status) . '</p>';
-            }
-            echo '</div>';
-        } else {
-            echo '<div class="notice notice-error is-dismissible">';
-            echo '<p><strong>Test Result: FAILED ✗</strong></p>';
-            echo '<p>Some FLUX settings or field saving are not working as expected.</p>';
-            echo '<p>Detailed results:</p>';
-            foreach ($test_result['results'] as $option => $status) {
-                echo '<p>' . esc_html($option) . ': ' . esc_html($status) . '</p>';
-            }
-            echo '</div>';
-        }
-    }
-    
     ?>
     <div class="wrap">
         <h2>FLUX Module</h2>
-        
-        <?php if (current_user_can('manage_options')): ?>
-        <p>
-            <a href="?page=igny8-flux&debug=1" class="button">Show Debug Info</a>
-            <a href="?page=igny8-flux" class="button">Hide Debug Info</a>
-            <a href="?page=igny8-flux&test_save=1" class="button">Test Save Function</a>
-        </p>
-        <?php endif; ?>
         
         <div class="igny8-tabs">
             <ul class="igny8-tab-nav">
@@ -471,6 +363,91 @@ function igny8_flux_admin_page() {
                 <div id="flux-debug" class="igny8-tab-content">
                     <div class="igny8-tab-section">
                         <h3>Debug & Analytics</h3>
+                        
+                        <?php if (current_user_can('manage_options')): ?>
+                        <p>
+                            <a href="?page=igny8-flux&debug=1" class="button">Show Debug Info</a>
+                            <a href="?page=igny8-flux" class="button">Hide Debug Info</a>
+                        </p>
+                        <?php endif; ?>
+                        
+                        <?php if (current_user_can('manage_options') && isset($_GET['debug'])): ?>
+                        <div class="notice notice-info is-dismissible">
+                            <p><strong>Debug Information:</strong></p>
+                            <p>Saved enabled post types: <?php echo implode(', ', $enabled_post_types); ?></p>
+                            <p>Global FLUX status: <?php echo esc_html($flux_status); ?></p>
+                            <p>Total saved post types count: <?php echo count($enabled_post_types); ?></p>
+                            
+                            <?php
+                            // Show POST data if available
+                            if (!empty($_POST)) {
+                                echo '<h4>POST Data Received:</h4>';
+                                echo '<table class="widefat" style="margin-top: 10px;">';
+                                echo '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
+                                foreach ($_POST as $key => $value) {
+                                    if (is_array($value)) {
+                                        $value = implode(', ', $value);
+                                    }
+                                    echo '<tr><td><strong>' . esc_html($key) . '</strong></td><td>' . esc_html($value) . '</td></tr>';
+                                }
+                                echo '</tbody></table>';
+                            } else {
+                                echo '<p><strong>No POST data received</strong></p>';
+                            }
+                            
+                            // Show form submission status
+                            echo '<h4>Form Submission Status:</h4>';
+                            echo '<p>POST data present: ' . (!empty($_POST) ? 'YES' : 'NO') . '</p>';
+                            echo '<p>Submit button pressed: ' . (isset($_POST['submit']) ? 'YES' : 'NO') . '</p>';
+                            echo '<p>Save FLUX settings pressed: ' . (isset($_POST['save-flux-settings']) ? 'YES' : 'NO') . '</p>';
+                            echo '<p>Nonce present: ' . (isset($_POST['igny8_flux_nonce']) ? 'YES' : 'NO') . '</p>';
+                            if (isset($_POST['igny8_flux_nonce'])) {
+                                echo '<p>Nonce valid: ' . (wp_verify_nonce($_POST['igny8_flux_nonce'], 'igny8_flux_settings') ? 'YES' : 'NO') . '</p>';
+                            }
+                            
+                            // Show all FLUX field values
+                            $flux_fields = [
+                                'igny8_flux_global_status' => 'Global Status',
+                                'igny8_flux_insertion_position' => 'Insertion Position',
+                                'igny8_flux_display_mode' => 'Display Mode',
+                                'igny8_flux_teaser_text' => 'Teaser Text',
+                                'igny8_flux_button_color' => 'Button Color',
+                                'igny8_flux_content_bg' => 'Content Background',
+                                'igny8_flux_custom_css' => 'Custom CSS',
+                                'igny8_flux_field_mode' => 'Field Mode',
+                                'igny8_flux_include_post_content' => 'Include Post Content',
+                                'igny8_flux_include_page_context' => 'Include Page Context',
+                                'igny8_flux_context_source' => 'Context Source',
+                                'igny8_flux_input_scope' => 'Input Scope',
+                                'igny8_flux_detection_prompt' => 'Detection Prompt',
+                                'igny8_flux_content_length' => 'Content Length',
+                                'igny8_flux_rewrite_prompt' => 'Rewrite Prompt'
+                            ];
+                            
+                            echo '<h4>All FLUX Field Values:</h4>';
+                            echo '<table class="widefat" style="margin-top: 10px;">';
+                            echo '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
+                            
+                            foreach ($flux_fields as $option_name => $label) {
+                                $value = get_option($option_name, 'Not Set');
+                                if (is_array($value)) {
+                                    $value = implode(', ', $value);
+                                }
+                                if (empty($value)) {
+                                    $value = 'Empty';
+                                }
+                                echo '<tr><td><strong>' . esc_html($label) . '</strong></td><td>' . esc_html($value) . '</td></tr>';
+                            }
+                            
+                            // Show fixed fields config
+                            $fixed_fields = get_option('igny8_flux_fixed_fields_config', []);
+                            echo '<tr><td><strong>Fixed Fields Config</strong></td><td>' . esc_html(json_encode($fixed_fields)) . '</td></tr>';
+                            
+                            echo '</tbody></table>';
+                            ?>
+                        </div>
+                        <?php endif; ?>
+                        
                         <div class="igny8-placeholder">
                             <h4>Personalization Triggers</h4>
                             <p>This section will display current personalization triggers fired and basic usage counts for debugging.</p>
@@ -612,66 +589,6 @@ function igny8_flux_save_settings() {
         echo '<p>Total enabled: ' . count($enabled_post_types) . '</p>';
         echo '</div>';
     });
-}
-
-/**
- * Test function to verify FLUX field saving works correctly
- * This function can be called manually for testing purposes
- */
-function igny8_flux_test_saving() {
-    if (!current_user_can('manage_options')) {
-        return false;
-    }
-    
-    // Test data for all FLUX fields
-    $test_data = [
-        'igny8_flux_global_status' => 'enabled',
-        'igny8_flux_enabled_post_types' => ['post', 'page'],
-        'igny8_flux_insertion_position' => 'before',
-        'igny8_flux_display_mode' => 'button',
-        'igny8_flux_teaser_text' => 'Test teaser text',
-        'igny8_flux_button_color' => '#ff0000',
-        'igny8_flux_content_bg' => '#f0f0f0',
-        'igny8_flux_custom_css' => '/* Test CSS */',
-        'igny8_flux_field_mode' => 'dynamic',
-        'igny8_flux_fixed_fields_config' => [
-            ['label' => 'Test Field', 'type' => 'text', 'options' => '']
-        ],
-        'igny8_flux_include_post_content' => '1',
-        'igny8_flux_include_page_context' => '0',
-        'igny8_flux_context_source' => '[test_context]',
-        'igny8_flux_input_scope' => '300',
-        'igny8_flux_detection_prompt' => 'Test detection prompt',
-        'igny8_flux_content_length' => '600',
-        'igny8_flux_rewrite_prompt' => 'Test rewrite prompt'
-    ];
-    
-    // Save test data
-    foreach ($test_data as $option_name => $value) {
-        update_option($option_name, $value);
-    }
-    
-    // Retrieve and verify each field
-    $all_passed = true;
-    $results = [];
-    
-    foreach ($test_data as $option_name => $expected_value) {
-        $saved_value = get_option($option_name);
-        
-        if ($saved_value === $expected_value) {
-            $results[$option_name] = 'PASS';
-        } else {
-            $results[$option_name] = 'FAIL';
-            $all_passed = false;
-        }
-    }
-    
-    // Return results for display
-    return [
-        'success' => $all_passed,
-        'results' => $results,
-        'test_data' => $test_data
-    ];
 }
 
 /**
