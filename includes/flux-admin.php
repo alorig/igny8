@@ -12,8 +12,25 @@ defined('ABSPATH') || exit;
  */
 function igny8_flux_admin_page() {
     // Handle form submission
-    if (isset($_POST['submit']) && wp_verify_nonce($_POST['igny8_flux_nonce'], 'igny8_flux_settings')) {
-        igny8_flux_save_settings();
+    $form_submitted = false;
+    $nonce_valid = false;
+    
+    if (!empty($_POST)) {
+        // Check for various submit indicators
+        if (isset($_POST['submit']) || isset($_POST['save-flux-settings']) || isset($_POST['igny8_flux_nonce'])) {
+            $form_submitted = true;
+            
+            // Verify nonce
+            if (isset($_POST['igny8_flux_nonce']) && wp_verify_nonce($_POST['igny8_flux_nonce'], 'igny8_flux_settings')) {
+                $nonce_valid = true;
+                igny8_flux_save_settings();
+            } else {
+                // Show nonce error
+                add_action('admin_notices', function() {
+                    echo '<div class="notice notice-error is-dismissible"><p>Security check failed. Please try again.</p></div>';
+                });
+            }
+        }
     }
     
     // Check if settings were just saved and show success message
@@ -32,6 +49,32 @@ function igny8_flux_admin_page() {
         echo '<p>Saved enabled post types: ' . implode(', ', $enabled_post_types) . '</p>';
         echo '<p>Global FLUX status: ' . esc_html($flux_status) . '</p>';
         echo '<p>Total saved post types count: ' . count($enabled_post_types) . '</p>';
+        
+        // Show POST data if available
+        if (!empty($_POST)) {
+            echo '<h4>POST Data Received:</h4>';
+            echo '<table class="widefat" style="margin-top: 10px;">';
+            echo '<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>';
+            foreach ($_POST as $key => $value) {
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
+                }
+                echo '<tr><td><strong>' . esc_html($key) . '</strong></td><td>' . esc_html($value) . '</td></tr>';
+            }
+            echo '</tbody></table>';
+        } else {
+            echo '<p><strong>No POST data received</strong></p>';
+        }
+        
+        // Show form submission status
+        echo '<h4>Form Submission Status:</h4>';
+        echo '<p>POST data present: ' . (!empty($_POST) ? 'YES' : 'NO') . '</p>';
+        echo '<p>Submit button pressed: ' . (isset($_POST['submit']) ? 'YES' : 'NO') . '</p>';
+        echo '<p>Save FLUX settings pressed: ' . (isset($_POST['save-flux-settings']) ? 'YES' : 'NO') . '</p>';
+        echo '<p>Nonce present: ' . (isset($_POST['igny8_flux_nonce']) ? 'YES' : 'NO') . '</p>';
+        if (isset($_POST['igny8_flux_nonce'])) {
+            echo '<p>Nonce valid: ' . (wp_verify_nonce($_POST['igny8_flux_nonce'], 'igny8_flux_settings') ? 'YES' : 'NO') . '</p>';
+        }
         
         // Show all FLUX field values
         $flux_fields = [
@@ -122,6 +165,7 @@ function igny8_flux_admin_page() {
             
             <form method="post" action="" class="igny8-settings-form">
                 <?php wp_nonce_field('igny8_flux_settings', 'igny8_flux_nonce'); ?>
+                <input type="hidden" name="save-flux-settings" value="1">
                 
                 <!-- Overview Tab -->
                 <div id="flux-overview" class="igny8-tab-content">
@@ -458,6 +502,37 @@ function igny8_flux_save_settings() {
         return;
     }
     
+    // TEMPORARY DEBUG LOGGING - Remove after diagnosis
+    error_log('=== FLUX SAVE DEBUG START ===');
+    error_log('POST data received: ' . print_r($_POST, true));
+    error_log('Nonce verification: ' . (isset($_POST['igny8_flux_nonce']) && wp_verify_nonce($_POST['igny8_flux_nonce'], 'igny8_flux_settings') ? 'PASS' : 'FAIL'));
+    
+    // Log current saved values before saving
+    $flux_fields = [
+        'igny8_flux_global_status',
+        'igny8_flux_enabled_post_types',
+        'igny8_flux_insertion_position',
+        'igny8_flux_display_mode',
+        'igny8_flux_teaser_text',
+        'igny8_flux_button_color',
+        'igny8_flux_content_bg',
+        'igny8_flux_custom_css',
+        'igny8_flux_field_mode',
+        'igny8_flux_include_post_content',
+        'igny8_flux_include_page_context',
+        'igny8_flux_context_source',
+        'igny8_flux_input_scope',
+        'igny8_flux_detection_prompt',
+        'igny8_flux_content_length',
+        'igny8_flux_rewrite_prompt'
+    ];
+    
+    error_log('Current saved values before saving:');
+    foreach ($flux_fields as $field) {
+        $value = get_option($field, 'NOT_SET');
+        error_log("$field: " . (is_array($value) ? json_encode($value) : $value));
+    }
+    
     // Define field mappings for clean processing
     $text_fields = [
         'igny8_flux_global_status' => 'enabled',
@@ -483,30 +558,38 @@ function igny8_flux_save_settings() {
         'igny8_flux_include_page_context' => '0'
     ];
     
+    error_log('Processing text fields:');
     // Process text fields
     foreach ($text_fields as $field_name => $default_value) {
         if (isset($_POST[$field_name])) {
             $value = sanitize_text_field($_POST[$field_name]);
             update_option($field_name, $value);
+            error_log("Saved $field_name: $value");
         } else {
             update_option($field_name, $default_value);
+            error_log("Set default for $field_name: $default_value (not in POST)");
         }
     }
     
+    error_log('Processing textarea fields:');
     // Process textarea fields
     foreach ($textarea_fields as $field_name => $default_value) {
         if (isset($_POST[$field_name])) {
             $value = wp_kses_post($_POST[$field_name]);
             update_option($field_name, $value);
+            error_log("Saved $field_name: " . substr($value, 0, 50) . "...");
         } else {
             update_option($field_name, $default_value);
+            error_log("Set default for $field_name: $default_value (not in POST)");
         }
     }
     
+    error_log('Processing checkbox fields:');
     // Process checkbox fields
     foreach ($checkbox_fields as $field_name => $default_value) {
         $value = isset($_POST[$field_name]) ? '1' : '0';
         update_option($field_name, $value);
+        error_log("Saved $field_name: $value (checkbox)");
     }
     
     // Handle color fields with hex validation
@@ -514,6 +597,7 @@ function igny8_flux_save_settings() {
         $button_color = sanitize_hex_color($_POST['igny8_flux_button_color']);
         if ($button_color) {
             update_option('igny8_flux_button_color', $button_color);
+            error_log("Saved button color: $button_color");
         }
     }
     
@@ -521,6 +605,7 @@ function igny8_flux_save_settings() {
         $content_bg = sanitize_hex_color($_POST['igny8_flux_content_bg']);
         if ($content_bg) {
             update_option('igny8_flux_content_bg', $content_bg);
+            error_log("Saved content bg: $content_bg");
         }
     }
     
@@ -540,6 +625,9 @@ function igny8_flux_save_settings() {
                 $enabled_post_types[] = $sanitized_type;
             }
         }
+        error_log("Saved enabled post types: " . implode(', ', $enabled_post_types));
+    } else {
+        error_log("No post types selected - saving empty array");
     }
     
     // Save the validated post types
@@ -558,7 +646,19 @@ function igny8_flux_save_settings() {
             }
         }
         update_option('igny8_flux_fixed_fields_config', $fields);
+        error_log("Saved fixed fields config: " . json_encode($fields));
+    } else {
+        error_log("No fixed fields config in POST");
     }
+    
+    // Log final saved values
+    error_log('Final saved values after saving:');
+    foreach ($flux_fields as $field) {
+        $value = get_option($field, 'NOT_SET');
+        error_log("$field: " . (is_array($value) ? json_encode($value) : $value));
+    }
+    
+    error_log('=== FLUX SAVE DEBUG END ===');
     
     // Show success message with detailed information
     add_action('admin_notices', function() use ($enabled_post_types) {
