@@ -16,6 +16,13 @@ function igny8_flux_admin_page() {
         igny8_flux_save_settings();
     }
     
+    // Check if settings were just saved and show success message
+    if (isset($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
+        echo '<div class="notice notice-success is-dismissible"><p>FLUX settings saved successfully.</p></div>';
+    }
+    
+
+    
     // Get current settings
     $enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
     $flux_status = get_option('igny8_flux_global_status', 'enabled');
@@ -77,6 +84,7 @@ function igny8_flux_admin_page() {
                                     }
                                     
                                     $is_enabled = in_array($post_type_name, $enabled_post_types);
+                                    $checked_attr = $is_enabled ? 'checked' : '';
                                     ?>
                                     <tr>
                                         <th><?php echo esc_html($post_type_label); ?>:</th>
@@ -85,7 +93,7 @@ function igny8_flux_admin_page() {
                                                 <input type="checkbox" 
                                                        name="igny8_flux_enabled_post_types[]" 
                                                        value="<?php echo esc_attr($post_type_name); ?>"
-                                                       <?php checked($is_enabled); ?>>
+                                                       <?php echo $checked_attr; ?>>
                                                 Enable personalization for <?php echo esc_html(strtolower($post_type_label)); ?>
                                             </label>
                                             <p class="description">
@@ -97,6 +105,8 @@ function igny8_flux_admin_page() {
                                 }
                                 ?>
                             </table>
+                            
+
                         </div>
                         
                         <div class="igny8-placeholder">
@@ -356,6 +366,7 @@ function igny8_flux_admin_page() {
     <?php
 }
 
+
 /**
  * Save FLUX settings
  */
@@ -373,6 +384,10 @@ function igny8_flux_save_settings() {
     // Save enabled post types
     if (isset($_POST['igny8_flux_enabled_post_types']) && is_array($_POST['igny8_flux_enabled_post_types'])) {
         $enabled_types = array_map('sanitize_text_field', $_POST['igny8_flux_enabled_post_types']);
+        // Filter out empty values
+        $enabled_types = array_filter($enabled_types, function($value) {
+            return !empty($value);
+        });
         update_option('igny8_flux_enabled_post_types', $enabled_types);
     } else {
         update_option('igny8_flux_enabled_post_types', []);
