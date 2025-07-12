@@ -105,7 +105,7 @@ add_action('admin_menu', function () {
         'FLUX',             // Menu title
         'manage_options',   // Capability required
         'igny8-flux',       // Menu slug
-        'igny8_admin_page_loader' // Callback function
+        'igny8_flux_admin_page' // Callback function
     );
 
     add_submenu_page(

@@ -17,9 +17,7 @@ function igny8_admin_page_loader() {
         case 'igny8':
             igny8_dashboard_page();
             break;
-        case 'igny8-flux':
-            igny8_flux_page();
-            break;
+
         case 'igny8-intelli':
             igny8_intelli_page();
             break;
@@ -60,69 +58,7 @@ function igny8_dashboard_page() {
     <?php
 }
 
-/**
- * FLUX module page
- */
-function igny8_flux_page() {
-    ?>
-    <div class="wrap">
-        <h2>FLUX Module</h2>
-        
-        <div class="igny8-tabs">
-            <ul class="igny8-tab-nav">
-                <li><a href="#flux-overview">Overview</a></li>
-                <li><a href="#flux-global-toggle">Global Personalization Toggle</a></li>
-                <li><a href="#flux-rules">Personalization Rules</a></li>
-                <li><a href="#flux-debug">Debug & Usage Insights</a></li>
-            </ul>
-            
-            <!-- Overview Tab -->
-            <div id="flux-overview" class="igny8-tab-content">
-                <div class="igny8-tab-section">
-                    <h3>FLUX Module Overview</h3>
-                    <div class="igny8-placeholder">
-                        <h4>FLUX Personalization Engine</h4>
-                        <p>This section will provide an overview of the FLUX personalization engine, including current status, active rules, and performance metrics.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Global Personalization Toggle Tab -->
-            <div id="flux-global-toggle" class="igny8-tab-content">
-                <div class="igny8-tab-section">
-                    <h3>Global Personalization Settings</h3>
-                    <div class="igny8-placeholder">
-                        <h4>Enable/Disable FLUX Globally</h4>
-                        <p>This section will allow enabling or disabling FLUX globally across your entire website.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Personalization Rules Tab -->
-            <div id="flux-rules" class="igny8-tab-content">
-                <div class="igny8-tab-section">
-                    <h3>Personalization Rules Management</h3>
-                    <div class="igny8-placeholder">
-                        <h4>Rule Configuration</h4>
-                        <p>This section will manage personalization rules, including rule creation, editing, and deletion.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Debug & Usage Insights Tab -->
-            <div id="flux-debug" class="igny8-tab-content">
-                <div class="igny8-tab-section">
-                    <h3>Debug & Analytics</h3>
-                    <div class="igny8-placeholder">
-                        <h4>Usage Insights and Debugging</h4>
-                        <p>This section will provide debugging tools and usage insights for the FLUX personalization engine.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php
-}
+
 
 /**
  * INTELLI module page

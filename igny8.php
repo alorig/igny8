@@ -14,6 +14,7 @@ require_once plugin_dir_path(__FILE__) . 'install.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin-settings.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin-ui.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin-enqueue.php';
+require_once plugin_dir_path(__FILE__) . 'includes/flux-admin.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcode.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax.php';
 require_once plugin_dir_path(__FILE__) . 'includes/openai.php';
