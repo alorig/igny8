@@ -49,8 +49,21 @@ function igny8_shortcode_handler($atts) {
     $post_id = get_queried_object_id();
 
     $ajax_url = esc_url(admin_url('admin-ajax.php'));
-    $teaser = esc_html(get_option('igny8_teaser_text', 'Want to read this as if it was written exclusively about you?'));
-    $button_color = esc_attr(get_option('igny8_button_color', '#0073aa'));
+    
+    // Check if FLUX is enabled and use FLUX-specific settings if available
+    $flux_status = get_option('igny8_flux_global_status', 'enabled');
+    $post_type = get_post_type();
+    $enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
+    
+    if ($flux_status === 'enabled' && in_array($post_type, $enabled_post_types)) {
+        // Use FLUX-specific settings
+        $teaser = esc_html(get_option('igny8_flux_teaser_text', get_option('igny8_teaser_text', 'Want to read this as if it was written exclusively about you?')));
+        $button_color = esc_attr(get_option('igny8_flux_button_color', get_option('igny8_button_color', '#0073aa')));
+    } else {
+        // Use global settings
+        $teaser = esc_html(get_option('igny8_teaser_text', 'Want to read this as if it was written exclusively about you?'));
+        $button_color = esc_attr(get_option('igny8_button_color', '#0073aa'));
+    }
 
     // 🔁 Step 3b: (Re)store form field values explicitly for HTML generation
     $form_fields_value = $atts['form_fields'];
@@ -111,12 +124,17 @@ function igny8_shortcode_handler($atts) {
 	
 	<!-- 🔒 Step 7b: Inject admin-defined context (hidden) -->
 <?php
-$context_raw = get_option('igny8_context_source', '');
+// Check if FLUX is enabled and use FLUX-specific context if available
+if ($flux_status === 'enabled' && in_array($post_type, $enabled_post_types)) {
+    $context_raw = get_option('igny8_flux_context_source', get_option('igny8_context_source', ''));
+} else {
+    $context_raw = get_option('igny8_context_source', '');
+}
+
 if (!empty($context_raw)) {
     echo '<div id="igny8-context" style="display:none;">';
     echo do_shortcode($context_raw); // evaluate here at output time
     echo '</div>';
-  
 }
 ?>
 

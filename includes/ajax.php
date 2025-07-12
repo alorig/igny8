@@ -10,12 +10,31 @@ add_action('wp_ajax_nopriv_igny8_generate_custom', 'igny8_ajax_generate_custom')
 
 function igny8_ajax_get_fields() {
     // 🔹 Step 1: Load current field mode (fixed or dynamic)
-    $mode = get_option('igny8_field_mode', 'dynamic');
+    $post_id = intval($_GET['post_id'] ?? 0);
+    
+    // Check if FLUX is enabled and use FLUX-specific settings if available
+    $flux_status = get_option('igny8_flux_global_status', 'enabled');
+    $post_type = get_post_type($post_id);
+    $enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
+    
+    if ($flux_status === 'enabled' && in_array($post_type, $enabled_post_types)) {
+        // Use FLUX-specific settings
+        $mode = get_option('igny8_flux_field_mode', get_option('igny8_field_mode', 'dynamic'));
+    } else {
+        // Use global settings
+        $mode = get_option('igny8_field_mode', 'dynamic');
+    }
 
     // 🔹 Step 2: Fixed mode logic (render admin-defined fields)
     if ($mode === 'fixed') {
         // 🧱 Load saved field config from WP options table
-        $fields = get_option('igny8_fixed_fields_config', []);
+        if ($flux_status === 'enabled' && in_array($post_type, $enabled_post_types)) {
+            // Use FLUX-specific fixed fields
+            $fields = get_option('igny8_flux_fixed_fields_config', get_option('igny8_fixed_fields_config', []));
+        } else {
+            // Use global fixed fields
+            $fields = get_option('igny8_fixed_fields_config', []);
+        }
 
         // 🎯 Get requested field IDs from shortcode (form_fields="1,2")
         $form_field_ids = array_map('intval', explode(',', sanitize_text_field($_GET['form_fields'] ?? '')));
@@ -106,8 +125,21 @@ function igny8_ajax_get_fields() {
 $post_id = intval($_GET['post_id']); // 🎯 Post ID is passed via data-post-id for context
 $api_key = get_option('igny8_api_key');
 $model = get_option('igny8_model', 'gpt-3.5-turbo');
-$scope = get_option('igny8_input_scope', 'title'); // e.g., 'title', 'content', etc.
-$prompt_template = get_option('igny8_detection_prompt');
+
+// Check if FLUX is enabled and use FLUX-specific settings if available
+$flux_status = get_option('igny8_flux_global_status', 'enabled');
+$post_type = get_post_type($post_id);
+$enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
+
+if ($flux_status === 'enabled' && in_array($post_type, $enabled_post_types)) {
+    // Use FLUX-specific settings
+    $scope = get_option('igny8_flux_input_scope', get_option('igny8_input_scope', '300'));
+    $prompt_template = get_option('igny8_flux_detection_prompt', get_option('igny8_detection_prompt', ''));
+} else {
+    // Use global settings
+    $scope = get_option('igny8_input_scope', 'title');
+    $prompt_template = get_option('igny8_detection_prompt', '');
+}
 
 // 🔁 STEP 1: Load content from post based on scope
 $content = get_igny8_content_scope($post_id, $scope); // returns title/content/body
@@ -190,8 +222,21 @@ function igny8_ajax_generate_custom() {
     // 🔹 Step 2: Load OpenAI configuration from admin
     $api_key = get_option('igny8_api_key');
     $model = get_option('igny8_model', 'gpt-3.5-turbo');
-    $length = get_option('igny8_content_length', '300'); // e.g. 100 words, 300 words, or 'full'
-    $prompt_template = get_option('igny8_rewrite_prompt', '');
+    
+    // Check if FLUX is enabled and use FLUX-specific settings if available
+    $flux_status = get_option('igny8_flux_global_status', 'enabled');
+    $post_type = get_post_type($post_id);
+    $enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
+    
+    if ($flux_status === 'enabled' && in_array($post_type, $enabled_post_types)) {
+        // Use FLUX-specific settings
+        $length = get_option('igny8_flux_content_length', get_option('igny8_content_length', '300'));
+        $prompt_template = get_option('igny8_flux_rewrite_prompt', get_option('igny8_rewrite_prompt', ''));
+    } else {
+        // Use global settings
+        $length = get_option('igny8_content_length', '300');
+        $prompt_template = get_option('igny8_rewrite_prompt', '');
+    }
 
  // 🔹 Step 3: Fully restore page context so shortcodes behave exactly like page view
 if (!empty($post_id)) {

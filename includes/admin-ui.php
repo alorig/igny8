@@ -390,9 +390,9 @@ function igny8_settings_page() {
         
         <div class="igny8-tabs">
             <ul class="igny8-tab-nav">
-                <li><a href="#api-keys-models">API Keys & Models</a></li>
-                <li><a href="#moderation-toggles">Moderation & Global Toggles</a></li>
-                <li><a href="#advanced-settings">Advanced Settings</a></li>
+                <li><a href="#connections-api">Connections & API Keys</a></li>
+                <li><a href="#styling-ui">Styling & UI Preferences</a></li>
+                <li><a href="#diagnostics-dev">Diagnostics & Developer Tools</a></li>
             </ul>
             
             <form method="post" action="options.php" class="igny8-settings-form">
@@ -402,8 +402,8 @@ function igny8_settings_page() {
                 do_settings_sections('igny8_settings_group');
                 ?>
 
-                <!-- API Keys & Models Tab -->
-                <div id="api-keys-models" class="igny8-tab-content">
+                <!-- Connections & API Keys Tab -->
+                <div id="connections-api" class="igny8-tab-content">
                     <div class="igny8-tab-section">
                         <h3>OpenAI Configuration</h3>
                         <table class="form-table">
@@ -446,10 +446,7 @@ function igny8_settings_page() {
                 </tr>
                         </table>
                     </div>
-                </div>
-
-                <!-- Moderation & Global Toggles Tab -->
-                <div id="moderation-toggles" class="igny8-tab-content">
+                    
                     <div class="igny8-tab-section">
                         <h3>Content Moderation</h3>
                         <table class="form-table">
@@ -460,183 +457,57 @@ function igny8_settings_page() {
                             </tr>
                         </table>
                     </div>
-                    
+                </div>
+
+                <!-- Styling & UI Preferences Tab -->
+                <div id="styling-ui" class="igny8-tab-content">
                     <div class="igny8-tab-section">
-                        <h3>Content Context Settings</h3>
+                        <h3>Global UI Settings</h3>
                         <table class="form-table">
-
                             <tr>
-                                <th>Input Scope for Field Detection:</th>
-                                <td>
-                                    <select name="igny8_input_scope">
-                                        <?php
-                                        $scopes = [
-                                            'title' => 'Title Only',
-                                            '300'   => 'First 300 Words',
-                                            'full'  => 'Full Content',
-                                        ];
-                                        $selected = get_option('igny8_input_scope', '300');
-                                        foreach ($scopes as $val => $label) {
-                                            echo "<option value='$val'" . selected($selected, $val, false) . ">$label</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </td>
+                                <th>Teaser Text:</th>
+                                <td><input type="text" name="igny8_teaser_text" value="<?php echo esc_attr(get_option('igny8_teaser_text', 'Want to read this as if it was written exclusively about you?')); ?>" size="80">
+                                <p class="description">Default teaser text for personalization buttons (can be overridden by modules).</p></td>
                             </tr>
                             <tr>
-                                <th>Detection Prompt:</th>
-                                <td><textarea name="igny8_detection_prompt" rows="4" cols="80"><?php echo esc_textarea(get_option('igny8_detection_prompt')); ?></textarea></td>
+                                <th>Button Background Color:</th>
+                                <td><input type="text" name="igny8_button_color" value="<?php echo esc_attr(get_option('igny8_button_color', '#0073aa')); ?>" size="10">
+                                <p class="description">Default button color for personalization buttons (can be overridden by modules).</p></td>
                             </tr>
-
-                            <tr valign="top">
-                                <th scope="row">Include Page Content in Prompt</th>
-                                <td>
-                                    <input type="checkbox" name="igny8_include_post_content" value="1" <?php checked(get_option('igny8_include_post_content'), '1'); ?> />
-                                    <label for="igny8_include_post_content">Enable to include current page's content in the GPT prompt</label>
-                                </td>
+                            <tr>
+                                <th>Content Background Color:</th>
+                                <td><input type="text" name="igny8_content_bg" value="<?php echo esc_attr(get_option('igny8_content_bg', '#f9f9f9')); ?>" size="10">
+                                <p class="description">Default background color for personalized content (can be overridden by modules).</p></td>
                             </tr>
-                            <tr valign="top">
-                                <th scope="row">Include Page Context in Prompt</th>
-                                <td>
-                                    <input type="checkbox" name="igny8_include_page_context" value="1" <?php checked(get_option('igny8_include_page_context'), '1'); ?> />
-                                    <label for="igny8_include_page_context">Enable to include output from a context shortcode (e.g. [page_context])</label>
-                                </td>
-                            </tr>
-                            <tr valign="top">
-                                <th scope="row">Context Shortcode or Manual Text</th>
-                                <td>
-                                    <textarea name="igny8_context_source" rows="4" cols="60"><?php echo esc_textarea(get_option('igny8_context_source')); ?></textarea>
-                                    <p class="description">Enter a shortcode like <code>[page_context]</code> or any manual text you want injected when 'Include Page Context' is enabled.</p>
-                                </td>
+                            <tr>
+                                <th>Custom CSS:</th>
+                                <td><textarea name="igny8_custom_css" rows="5" cols="80"><?php echo esc_textarea(get_option('igny8_custom_css', '')); ?></textarea>
+                                <p class="description">Global custom CSS for Igny8 components (can be overridden by modules).</p></td>
                             </tr>
                         </table>
                     </div>
                 </div>
 
-                <!-- Advanced Settings Tab -->
-                <div id="advanced-settings" class="igny8-tab-content">
+                <!-- Diagnostics & Developer Tools Tab -->
+                <div id="diagnostics-dev" class="igny8-tab-content">
                     <div class="igny8-tab-section">
-                        <h3>Content Processing</h3>
-                        <table class="form-table">
-
-                            <tr>
-                                <th>Rewrite Content Length:</th>
-                                <td>
-                                    <select name="igny8_content_length">
-                                        <?php
-                                        $lengths = [
-                                            '300' => '300 Words',
-                                            '600' => '600 Words',
-                                            '900' => '900 Words',
-                                            'full' => 'Full Content',
-                                        ];
-                                        $selected = get_option('igny8_content_length', '300');
-                                        foreach ($lengths as $val => $label) {
-                                            echo "<option value='$val'" . selected($selected, $val, false) . ">$label</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Rewrite Prompt:</th>
-                                <td><textarea name="igny8_rewrite_prompt" rows="4" cols="80"><?php echo esc_textarea(get_option('igny8_rewrite_prompt')); ?></textarea></td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                    <div class="igny8-tab-section">
-                        <h3>User Interface</h3>
-                        <table class="form-table">
-                            <tr>
-                                <th>Teaser Text:</th>
-                                <td><input type="text" name="igny8_teaser_text" value="<?php echo esc_attr(get_option('igny8_teaser_text', 'Want to read this as if it was written exclusively about you?')); ?>" size="80"></td>
-                            </tr>
-                            <tr>
-                                <th>Button Background Color:</th>
-                                <td><input type="text" name="igny8_button_color" value="<?php echo esc_attr(get_option('igny8_button_color', '#0073aa')); ?>" size="10"></td>
-                            </tr>
-                            <tr>
-                                <th>Content Background Color:</th>
-                                <td><input type="text" name="igny8_content_bg" value="<?php echo esc_attr(get_option('igny8_content_bg', '#f9f9f9')); ?>" size="10"></td>
-                            </tr>
-                            <tr>
-                                <th>Custom CSS:</th>
-                                <td><textarea name="igny8_custom_css" rows="5" cols="80"><?php echo esc_textarea(get_option('igny8_custom_css', '')); ?></textarea></td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                    <div class="igny8-tab-section">
-                        <h3>Field Configuration</h3>
-                        <table class="form-table">
-                            <tr>
-                                <th>Field Mode:</th>
-                                <td>
-                                    <select name="igny8_field_mode">
-                                        <option value="dynamic" <?php selected('dynamic', get_option('igny8_field_mode', 'dynamic')); ?>>Auto Detect (GPT)</option>
-                                        <option value="fixed" <?php selected('fixed', get_option('igny8_field_mode')); ?>>Fixed Fields (No Detection)</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr id="igny8-fixed-fields-row">
-                                <th>Fixed Fields:</th>
-                                <td>
-                                    <table id="igny8-fixed-fields-table" class="widefat">
-                                        <thead>
-                                            <tr>
-                                                <th>Label</th>
-                                                <th>Type</th>
-                                                <th>Options (comma-separated)</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $fields = get_option('igny8_fixed_fields_config', []);
-                                            if (empty($fields)) {
-                                                $fields = [['label' => '', 'type' => 'text', 'options' => '']];
-                                            }
-
-                                            foreach ($fields as $i => $field) {
-                                                echo '<tr>';
-                                                echo '<td><input type="text" name="igny8_fixed_fields_config[' . $i . '][label]" value="' . esc_attr($field['label']) . '"></td>';
-                                                echo '<td>
-                                                        <select name="igny8_fixed_fields_config[' . $i . '][type]">
-                                                          <option value="text" ' . selected($field['type'], 'text', false) . '>Text</option>
-                                                          <option value="select" ' . selected($field['type'], 'select', false) . '>Select</option>
-                                                          <option value="radio" ' . selected($field['type'], 'radio', false) . '>Radio</option>
-                                                        </select>
-                                                      </td>';
-                                                echo '<td><input type="text" name="igny8_fixed_fields_config[' . $i . '][options]" value="' . esc_attr($field['options']) . '"></td>';
-                                                echo '<td><button type="button" class="button igny8-remove-row">Remove</button></td>';
-                                                echo '</tr>';
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-
-                                    <!--== Add More Fields Button ==-->
-                                    <button type="button" id="igny8-add-row" class="button">Add Field</button>
-                                    <p class="description">You can add up to 6 fields. Options apply only to select/radio.</p>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                    <div class="igny8-tab-section">
-                        <h3>Future Advanced Settings</h3>
+                        <h3>Token Usage Counters</h3>
                         <div class="igny8-placeholder">
-                            <h4>Advanced Configuration Options</h4>
-                            <p>This section will contain advanced settings for caching, performance optimization, and advanced AI model configurations.</p>
+                            <h4>Token Usage Counters (coming soon)</h4>
+                            <p>This section will display token usage statistics and cost tracking for all Igny8 modules.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="igny8-tab-section">
+                        <h3>Logs Export</h3>
+                        <div class="igny8-placeholder">
+                            <h4>Logs Export (coming soon)</h4>
+                            <p>This section will provide debugging logs and export functionality for troubleshooting.</p>
                         </div>
                     </div>
                 </div>
 
-                <!--== Error Box Placeholder ==-->
-                <div id="igny8-error-box" style="color:red; margin: 1em 0;"></div>
-
-                <!--== Save Settings Button ==-->
+                <!-- Save Button -->
                 <div class="igny8-save-container">
                     <?php submit_button('Save Settings'); ?>
                 </div>

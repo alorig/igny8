@@ -151,6 +151,96 @@
         }
 
         //==================================================
+        // ## FLUX FIXED FIELDS FUNCTIONALITY
+        //==================================================
+        
+        /**
+         * Initialize FLUX fixed fields table functionality
+         * Handles adding/removing rows and field mode toggle
+         */
+        function initFluxFixedFields() {
+            const fieldMode = $('select[name="igny8_flux_field_mode"]');
+            const fixedFieldsRow = $('#igny8-flux-fixed-fields-row');
+            const addRowBtn = $('#igny8-flux-add-row');
+            const table = $('#igny8-flux-fixed-fields-table');
+            
+            // Handle field mode toggle
+            if (fieldMode.length && fixedFieldsRow.length) {
+                fieldMode.on('change', function() {
+                    if ($(this).val() === 'fixed') {
+                        fixedFieldsRow.show();
+                    } else {
+                        fixedFieldsRow.hide();
+                    }
+                });
+                
+                // Trigger on page load
+                fieldMode.trigger('change');
+            }
+            
+            // Handle add row button
+            if (addRowBtn.length) {
+                addRowBtn.on('click', function() {
+                    addFluxFieldRow();
+                });
+            }
+            
+            // Handle remove row buttons (delegate for dynamically added rows)
+            if (table.length) {
+                table.on('click', '.igny8-flux-remove-row', function() {
+                    $(this).closest('tr').remove();
+                    updateFluxFieldIndexes();
+                });
+            }
+        }
+        
+        /**
+         * Add a new field row to the FLUX fixed fields table
+         */
+        function addFluxFieldRow() {
+            const table = $('#igny8-flux-fixed-fields-table tbody');
+            const rowCount = table.find('tr').length;
+            
+            if (rowCount >= 6) {
+                alert('Maximum 6 fields allowed');
+                return;
+            }
+            
+            const newRow = `
+                <tr>
+                    <td><input type="text" name="igny8_flux_fixed_fields_config[${rowCount}][label]" value=""></td>
+                    <td>
+                        <select name="igny8_flux_fixed_fields_config[${rowCount}][type]">
+                            <option value="text">Text</option>
+                            <option value="select">Select</option>
+                            <option value="radio">Radio</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="igny8_flux_fixed_fields_config[${rowCount}][options]" value=""></td>
+                    <td><button type="button" class="button igny8-flux-remove-row">Remove</button></td>
+                </tr>
+            `;
+            
+            table.append(newRow);
+        }
+        
+        /**
+         * Update field indexes after row removal
+         */
+        function updateFluxFieldIndexes() {
+            const table = $('#igny8-flux-fixed-fields-table tbody');
+            table.find('tr').each(function(index) {
+                $(this).find('input, select').each(function() {
+                    const name = $(this).attr('name');
+                    if (name) {
+                        const newName = name.replace(/\[\d+\]/, `[${index}]`);
+                        $(this).attr('name', newName);
+                    }
+                });
+            });
+        }
+
+        //==================================================
         // ## INITIALIZATION
         //==================================================
         
@@ -159,6 +249,11 @@
             handleFieldModeChange();
             initColorPickers();
             initFormValidation();
+        }
+        
+        // Initialize FLUX-specific functionality
+        if ($('body').hasClass('settings_page_igny8-flux')) {
+            initFluxFixedFields();
         }
 
     });
