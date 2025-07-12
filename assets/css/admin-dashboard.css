@@ -133,6 +133,34 @@
     text-align: right;
 }
 
+/* Post Type Status Indicators */
+.post-type-row.enabled {
+    background-color: #f0f8f0;
+    border-left: 4px solid #46b450;
+}
+
+.post-type-row.disabled {
+    background-color: #f8f8f8;
+    border-left: 4px solid #dcdcde;
+}
+
+.post-type-row.enabled th {
+    color: #46b450;
+    font-weight: 600;
+}
+
+.post-type-row.disabled th {
+    color: #646970;
+}
+
+.post-type-row .description strong {
+    color: #46b450;
+}
+
+.post-type-row.disabled .description strong {
+    color: #646970;
+}
+
 /* Responsive Design */
 @media (max-width: 782px) {
     .igny8-tab-nav {

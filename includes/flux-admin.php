@@ -21,15 +21,47 @@ function igny8_flux_admin_page() {
         echo '<div class="notice notice-success is-dismissible"><p>FLUX settings saved successfully.</p></div>';
     }
     
-
-    
     // Get current settings
     $enabled_post_types = get_option('igny8_flux_enabled_post_types', []);
     $flux_status = get_option('igny8_flux_global_status', 'enabled');
     
+    // Debug information for administrators
+    if (current_user_can('manage_options') && isset($_GET['debug'])) {
+        echo '<div class="notice notice-info is-dismissible">';
+        echo '<p><strong>Debug Information:</strong></p>';
+        echo '<p>Saved enabled post types: ' . implode(', ', $enabled_post_types) . '</p>';
+        echo '<p>Global FLUX status: ' . esc_html($flux_status) . '</p>';
+        echo '<p>Total saved post types count: ' . count($enabled_post_types) . '</p>';
+        echo '</div>';
+    }
+    
+    // Test save function
+    if (current_user_can('manage_options') && isset($_GET['test_save'])) {
+        $test_result = igny8_flux_test_saving();
+        if ($test_result) {
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '<p><strong>Test Result: PASSED ✓</strong></p>';
+            echo '<p>FLUX post type saving is working correctly.</p>';
+            echo '</div>';
+        } else {
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '<p><strong>Test Result: FAILED ✗</strong></p>';
+            echo '<p>FLUX post type saving is not working correctly.</p>';
+            echo '</div>';
+        }
+    }
+    
     ?>
     <div class="wrap">
         <h2>FLUX Module</h2>
+        
+        <?php if (current_user_can('manage_options')): ?>
+        <p>
+            <a href="?page=igny8-flux&debug=1" class="button">Show Debug Info</a>
+            <a href="?page=igny8-flux" class="button">Hide Debug Info</a>
+            <a href="?page=igny8-flux&test_save=1" class="button">Test Save Function</a>
+        </p>
+        <?php endif; ?>
         
         <div class="igny8-tabs">
             <ul class="igny8-tab-nav">
@@ -85,8 +117,10 @@ function igny8_flux_admin_page() {
                                     
                                     $is_enabled = in_array($post_type_name, $enabled_post_types);
                                     $checked_attr = $is_enabled ? 'checked' : '';
+                                    $status_class = $is_enabled ? 'enabled' : 'disabled';
+                                    $status_text = $is_enabled ? '✓ Enabled' : '✗ Disabled';
                                     ?>
-                                    <tr>
+                                    <tr class="post-type-row <?php echo $status_class; ?>">
                                         <th><?php echo esc_html($post_type_label); ?>:</th>
                                         <td>
                                             <label>
@@ -98,6 +132,7 @@ function igny8_flux_admin_page() {
                                             </label>
                                             <p class="description">
                                                 When enabled, the [igny8] shortcode will be automatically injected before <?php echo esc_html(strtolower($post_type_label)); ?> content.
+                                                <br><strong>Current status: <?php echo $status_text; ?></strong>
                                             </p>
                                         </td>
                                     </tr>
@@ -381,17 +416,26 @@ function igny8_flux_save_settings() {
         update_option('igny8_flux_global_status', $status);
     }
     
-    // Save enabled post types
+    // Save enabled post types with comprehensive validation
+    $enabled_post_types = [];
+    
     if (isset($_POST['igny8_flux_enabled_post_types']) && is_array($_POST['igny8_flux_enabled_post_types'])) {
-        $enabled_types = array_map('sanitize_text_field', $_POST['igny8_flux_enabled_post_types']);
-        // Filter out empty values
-        $enabled_types = array_filter($enabled_types, function($value) {
-            return !empty($value);
-        });
-        update_option('igny8_flux_enabled_post_types', $enabled_types);
-    } else {
-        update_option('igny8_flux_enabled_post_types', []);
+        // Get all valid public post types for validation
+        $valid_post_types = array_keys(get_post_types(['public' => true], 'names'));
+        
+        // Sanitize and validate each post type
+        foreach ($_POST['igny8_flux_enabled_post_types'] as $post_type) {
+            $sanitized_type = sanitize_text_field($post_type);
+            
+            // Only add if it's not empty and is a valid post type (excluding attachments)
+            if (!empty($sanitized_type) && in_array($sanitized_type, $valid_post_types) && $sanitized_type !== 'attachment') {
+                $enabled_post_types[] = $sanitized_type;
+            }
+        }
     }
+    
+    // Save the validated post types
+    update_option('igny8_flux_enabled_post_types', $enabled_post_types);
     
     // Save display settings
     if (isset($_POST['igny8_flux_insertion_position'])) {
@@ -477,10 +521,40 @@ function igny8_flux_save_settings() {
         update_option('igny8_flux_rewrite_prompt', $rewrite_prompt);
     }
     
-    // Show success message
-    add_action('admin_notices', function() {
-        echo '<div class="notice notice-success is-dismissible"><p>FLUX settings saved successfully.</p></div>';
+    // Show success message with detailed information
+    add_action('admin_notices', function() use ($enabled_post_types) {
+        echo '<div class="notice notice-success is-dismissible">';
+        echo '<p><strong>FLUX settings saved successfully!</strong></p>';
+        echo '<p>Enabled post types: ' . (empty($enabled_post_types) ? 'None' : implode(', ', $enabled_post_types)) . '</p>';
+        echo '<p>Total enabled: ' . count($enabled_post_types) . '</p>';
+        echo '</div>';
     });
+}
+
+/**
+ * Test function to verify FLUX post type saving works correctly
+ * This function can be called manually for testing purposes
+ */
+function igny8_flux_test_saving() {
+    if (!current_user_can('manage_options')) {
+        return false;
+    }
+    
+    // Test data
+    $test_post_types = ['post', 'page'];
+    
+    // Save test data
+    update_option('igny8_flux_enabled_post_types', $test_post_types);
+    
+    // Retrieve and verify
+    $saved_types = get_option('igny8_flux_enabled_post_types', []);
+    
+    // Check if saving worked
+    if ($saved_types === $test_post_types) {
+        return true;
+    }
+    
+    return false;
 }
 
 /**
